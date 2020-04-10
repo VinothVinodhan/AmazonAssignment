@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite guice-stage="DEVELOPMENT" name="Failed suite [EbayAutomation]">
+  <test thread-count="5" name="purchaseItem(failed)">
+    <classes>
+      <class name="com.ebay.testcase.EbayTestCase">
+        <methods>
+          <include name="purchaseItem" invocation-numbers="0"/>
+          <include name="extendReport"/>
+        </methods>
+      </class> <!-- com.ebay.testcase.EbayTestCase -->
+    </classes>
+  </test> <!-- purchaseItem(failed) -->
+</suite> <!-- Failed suite [EbayAutomation] -->

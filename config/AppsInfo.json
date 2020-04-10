@@ -1,0 +1,10 @@
+{
+	"name": "AmazonShoppingApp",
+	"APP_PACKAGE": "com.amazon.mShop.android.shopping",
+	"APP_ACTIVITY": "com.amazon.mShop.home.HomeActivity",
+	"path": "/apps/Amazon_shopping.apk",
+	"AppiumIP": "127.0.0.1",
+	"Port": "4723",
+	"TestData":"TestData\\TestData.xlsx",
+	"TestSheetName":"Sheet1"
+}
