@@ -150,12 +150,7 @@ public class EbayAppPage extends BaseSuite {
 		selectLanguage(methodName, language);
 
 		// Search and Product
-		searchItem(methodName, requiredItem);
-
-		// wait for an element
-		waitForElement(driver, firstItemTitle);
-		// Select an item from searched result
-		selectItem(requiredItem);
+		searchSelect(methodName, requiredItem);
 
 		// Take screenshot
 		BaseSuite.logInfo("After selecting the product from searched result.");
@@ -184,14 +179,6 @@ public class EbayAppPage extends BaseSuite {
 			// TODO: handle exception
 		}
 
-		try {
-			waitForElement(driver, deleveryBy);
-			String deleveryByDate = deleveryBy.getText();
-			BaseSuite.logInfo("Delivery Data: " + deleveryByDate);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
 		// below code is to take quantity from dropdown
 		String qty = readQuantity(methodName);
 		System.out.println("Selected Quantity: " + qty);
@@ -200,6 +187,20 @@ public class EbayAppPage extends BaseSuite {
 		clickAddToCart(methodName);
 		BaseSuite.getScreenShot(driver, "After Clicking on Add To Cart", methodName);
 
+		// To handle cart page
+		cartPage(methodName);
+
+		return result;
+
+	}
+
+	/**
+	 * Handleing cart page by taking cost & name of the product.
+	 * 
+	 * @param methodName
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	private void cartPage(String methodName) {
 		// To click cart icon
 		clickCart();
 
@@ -225,9 +226,23 @@ public class EbayAppPage extends BaseSuite {
 
 		// To delete an item
 		clickButton("Delete");
+	}
 
-		return result;
+	/**
+	 * Search and select a product.
+	 * 
+	 * @param methodName
+	 * @param requiredItem
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	private void searchSelect(String methodName, String requiredItem) {
+		// Search and Product
+		searchItem(methodName, requiredItem);
 
+		// wait for an element
+		waitForElement(driver, firstItemTitle);
+		// Select an item from searched result
+		selectItem(requiredItem);
 	}
 
 	/**
