@@ -21,8 +21,15 @@ public class EbayAppPage extends BaseSuite {
 	public String deviceName = null;
 	AndroidDriver driver = null;
 	AppiumDriverFactory obj = new AppiumDriverFactory();
-	Logger log1 = Logger.getLogger(EbayAppPage.class);
+	Logger log = Logger.getLogger(EbayAppPage.class);
 
+	/**
+	 * Constructor to invoke appium server and launch the application
+	 * 
+	 * @param deviceName
+	 * @param appName
+	 * @author vinothkumar.p08@infosys.com
+	 */
 	public EbayAppPage(String deviceName, String appName) {
 		try {
 			driver = (AndroidDriver) obj.getAppiumDriver();
@@ -47,6 +54,15 @@ public class EbayAppPage extends BaseSuite {
 
 	@FindBy(id = "com.amazon.mShop.android.shopping:id/chrome_action_bar_cart_image")
 	private WebElement cartIcon;
+
+	@FindBy(id = "com.amazon.mShop.android.shopping:id/chrome_action_bar_cart")
+	private WebElement cartIcon1;
+
+	@FindBy(xpath = "//android.widget.ImageView[@content-desc='Cart']")
+	private WebElement cartIcon2;
+
+	@FindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.RelativeLayout/android.widget.RelativeLayout[2]/android.widget.RelativeLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[1]/android.widget.RelativeLayout/android.widget.LinearLayout[2]/android.widget.FrameLayout")
+	private WebElement cartIcon3;
 
 	@FindBy(className = "android.widget.Button")
 	private List<WebElement> btn;
@@ -93,9 +109,19 @@ public class EbayAppPage extends BaseSuite {
 	@FindBy(className = "android.widget.CheckBox")
 	private WebElement showPassword;
 
+	@FindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.RelativeLayout/android.widget.RelativeLayout[2]/android.widget.RelativeLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ViewAnimator/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.View/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[3]/android.view.View[4]/android.view.View/android.view.View[2]/android.view.View[1]/android.view.View/android.view.View/android.widget.EditText")
+	private WebElement costElement;
+
+	@FindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.RelativeLayout/android.widget.RelativeLayout[2]/android.widget.RelativeLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ViewAnimator/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.View/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[2]/android.view.View[1]/android.view.View/android.view.View/android.view.View[1]/android.view.View[4]/android.view.View[1]/android.view.View/android.view.View[2]")
+	private WebElement deleveryBy;
+
+	@FindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.RelativeLayout/android.widget.RelativeLayout[2]/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ViewAnimator/android.view.View/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View[1]/android.view.View/android.view.View[4]")
+	private WebElement costElementCart;
+
 	String sizeOfOil = null;
 	String productName = null;
 	String quantityOfProduct = null;
+	String productCost = null;
 
 	/**
 	 * To search for the product
@@ -108,14 +134,16 @@ public class EbayAppPage extends BaseSuite {
 	 * @param language
 	 * @param pincode
 	 * @return
+	 * @author vinothkumar.p08@infosys.com
 	 */
 	public Result searchPurchaseItem(String methodName, String searchProduct, String requiredItem, String mobileNumber,
 			String password, String language, String pincode) {
 
 		// Invoking method to login
 		login(methodName, mobileNumber, password);
+		BaseSuite.getScreenShot(driver, "Home Page of an application", methodName);
 
-		// Entering Pincode is optional
+		// Entering Pin Code is optional
 		// enterPincode();
 
 		// Selecting language after loggd into the account
@@ -124,47 +152,99 @@ public class EbayAppPage extends BaseSuite {
 		// Search and Product
 		searchItem(methodName, requiredItem);
 
-		System.out.println(driver.getPageSource());
-		enterPincode(pincode);
-
 		// wait for an element
 		waitForElement(driver, firstItemTitle);
 		// Select an item from searched result
 		selectItem(requiredItem);
 
-		// ake screenshot
-		BaseSuite.getScreenShot(driver, "Search Result 1", methodName);
-		log1.info("Search Result Page screenshot taken");
+		// Take screenshot
+		BaseSuite.logInfo("After selecting the product from searched result.");
+		BaseSuite.getScreenShot(driver, "Selected Item", methodName);
+		log.info("Search Result Page screenshot taken");
 
 		// To get size of the product
 		String sizeOfItem = sizeOfProduct(methodName);
 		System.out.println("Returned from sizeOfItem method: " + sizeOfItem);
 
-		// Below is to take Rupees just below the Size: 5 litre button
-		System.out.println("Rupees on the page: " + textOnThePage.getText());
+		swipe(driver);
+
+		String costOnProduct = getTextOnPageBackup(textsOnThePage, "rupees");
+		result.setProductCost(costOnProduct);
+		BaseSuite.logInfo("Product Cost on Selected Item Page: " + costOnProduct);
 
 		// to swipe down till quantity appear
-		for (int a = 0; a < 2; a++) {
+		for (int a = 0; a < 1; a++) {
 			swipe(driver);
+		}
+
+		// To select One Time Purchase radio button
+		try {
+			selectOneTimePurchase(methodName);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		try {
+			waitForElement(driver, deleveryBy);
+			String deleveryByDate = deleveryBy.getText();
+			BaseSuite.logInfo("Delivery Data: " + deleveryByDate);
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 
 		// below code is to take quantity from dropdown
 		String qty = readQuantity(methodName);
 		System.out.println("Selected Quantity: " + qty);
 
-		System.out.println("Add to card button: " + driver.getPageSource());
-
 		// To click on add to cart
 		clickAddToCart(methodName);
 		BaseSuite.getScreenShot(driver, "After Clicking on Add To Cart", methodName);
 
-		waitForElement(driver, cartIcon);
-		cartIcon.click();
+		// To click cart icon
+		clickCart();
+
 		// To get the product name on the cart page
 		String requiredProductName = getTextOnPage(driver, text, productName);
 		System.out.println("Validated ProductName on Cart Page is: " + requiredProductName);
+		BaseSuite.logInfo("Validated ProductName on Cart Page is: " + requiredProductName);
+		log.info("Validated ProductName on Cart Page is: " + requiredProductName);
+		BaseSuite.getScreenShot(driver, "Cart Page", methodName);
+
+		// Below code is to get item cost on cart page
+		try {
+			String costOnCartPage = costElementCart.getText();
+			BaseSuite.logInfo("Cost on Cart Page: " + costOnCartPage);
+			System.out.println("Cost on Cart Page: " + costOnCartPage);
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		String costOncartPage = getTextOnPageBackup(textsOnThePage, ".00");
+		BaseSuite.logInfo("Cost on Cart Page: " + costOncartPage);
+		result.setCostOnCart(costOncartPage);
+
+		// To delete an item
+		clickButton("Delete");
+
 		return result;
 
+	}
+
+	/**
+	 * This method is to click any button bases on parameter
+	 * 
+	 * @param buttonName
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	private void clickButton(String buttonName) {
+		for (WebElement button : btn) {
+			System.out.println("Button Text: " + button.getText());
+			if (button.getTagName().contains("Delete")) {
+				button.click();
+				BaseSuite.logInfo("Deleted an item on Cart Page");
+
+			}
+		}
 	}
 
 	/**
@@ -198,6 +278,10 @@ public class EbayAppPage extends BaseSuite {
 
 		waitForElement(driver, loginText);
 		loginText.click();
+		loginText.clear();
+		loginText.clear();
+		loginText.sendKeys(password);
+		loginText.clear();
 		loginText.sendKeys(password);
 
 		// De-Selecting the show password check box
@@ -247,15 +331,17 @@ public class EbayAppPage extends BaseSuite {
 		for (WebElement radioButton : radioBtns) {
 			System.out.println("Languages appeared on the screen: " + radioButton.getText());
 			if (radioButton.getText().contains(language)) {
+				BaseSuite.logInfo("Selected Language: " + " <b> " + language + "</b>");
 				radioButton.click();
 			}
 		}
-		getScreenShot(driver, "Selected Langiage", methodName);
+		getScreenShot(driver, "Selected Language", methodName);
 
 		for (WebElement saveButton : btn) {
 			System.out.println("Buttons name: " + saveButton.getText());
 			if (saveButton.getText().contains("Save")) {
 				saveButton.click();
+				BaseSuite.logInfo("Clicked on Save button after saving language");
 			}
 		}
 
@@ -281,7 +367,7 @@ public class EbayAppPage extends BaseSuite {
 	 * 
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	private void selectOneTimePurchase() {
+	private void selectOneTimePurchase(String methodName) {
 		for (WebElement radioBtns : radioBtns) {
 			System.out.println("Radio button available: " + radioBtns.getText());
 			if (radioBtns.getText().contains("One-time purchase")) {
@@ -291,9 +377,11 @@ public class EbayAppPage extends BaseSuite {
 				System.out.println("Size of the radio button text is: " + size);
 				String cost = itemValue.substring(11);
 				System.out.println("Cost of item: " + cost);
-
+				radioBtns.click();
+				BaseSuite.getScreenShot(driver, "One-Time-Purchase", methodName);
 			}
 		}
+
 	}
 
 	/**
@@ -332,7 +420,9 @@ public class EbayAppPage extends BaseSuite {
 				System.out.println("Product Name: " + productName);
 				// Setting product name to result class object
 				result.setProductName(productName);
+				BaseSuite.logInfo("Product Name selected: " + "<b>" + productName + "</b>");
 				ele.click();
+				BaseSuite.logInfo("Clicked on product");
 				break;
 			}
 
@@ -389,15 +479,51 @@ public class EbayAppPage extends BaseSuite {
 	 * @param productName
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	private void getTextOnPageBackup(List<WebElement> elements, String productName) {
+	private String getTextOnPageBackup(List<WebElement> elements, String productName) {
 
 		for (WebElement ele : elements) {
 			System.out.println("Text on the page: " + ele.getText());
-			if (ele.getText().equals(productName)) {
+			if (ele.getText().contains(productName)) {
 				System.out.println("Item name on Cart Page: " + ele.getText());
+				productCost = ele.getText();
 				break;
 			}
 		}
+		return productCost;
+	}
+
+	/**
+	 * To click cart icon
+	 * 
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public void clickCart() {
+
+		try {
+
+			cartIcon.click();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+
+			cartIcon1.click();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+
+			cartIcon2.click();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		try {
+
+			cartIcon3.click();
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
 	}
 
 }

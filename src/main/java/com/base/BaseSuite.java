@@ -16,15 +16,20 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.ITestContext;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.BeforeTest;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.MediaEntityBuilder;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pojo.AppInfoPojo;
-import com.relevantcodes.extentreports.ExtentReports;
-import com.relevantcodes.extentreports.ExtentTest;
-import com.relevantcodes.extentreports.LogStatus;
+//import com.relevantcodes.extentreports.ExtentReports;
+//import com.relevantcodes.extentreports.ExtentTest;
+//import com.relevantcodes.extentreports.LogStatus;
 
 import io.appium.java_client.MobileDriver;
 import io.appium.java_client.TouchAction;
@@ -33,24 +38,58 @@ public class BaseSuite {
 	static Logger log = Logger.getLogger(BaseSuite.class);
 	static WebDriver driver;
 
-	static ExtentTest logger;
-	static ExtentReports report;
+	static ExtentTest logger = null;
+	static ExtentReports report = null;
+	static ExtentHtmlReporter htmlReporter;
 	static byte[] jsonData = null;
 	static AppInfoPojo appinfo = new AppInfoPojo();
 	static ObjectMapper objectMapper = new ObjectMapper();
 
-	// @AfterTest
-	public void afterSuite() {
+	@BeforeTest
+	/**
+	 * Initialize Extent Report before Test
+	 * 
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public static void extentReport() {
+		htmlReporter = new ExtentHtmlReporter("./TestReports/ExtentReport/TestReport.html");
+		System.out.println("Report created");
+		report = new ExtentReports();
+		report.attachReporter(htmlReporter);
+		logger = report.createTest("Search the Product",
+				"Search the product based on user input and add it to the cart.");
+
+	}
+
+	@AfterTest
+	/**
+	 * After Test Method
+	 * 
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public void completeTestCase() {
+		report.flush();
 		AppiumDriverFactory.closeApp();
 		AppiumDriverFactory.stopAppium();
 		logInfo("Appium Server Stopped");
+
 	}
 
-	@BeforeSuite
-	public static void extendReport() {
-		report = new ExtentReports(System.getProperty("user.dir") + "//TestReports//ExtentReport//TestReport.html");
-		logger = report.startTest("Automation Report");
+	/**
+	 * This method is an optional. We can extend to ExtendReport class for
+	 * report generation.
+	 * 
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	// @BeforeSuite
+	public void extendReport() {
+		ExtendReport.extendReport();
 	}
+
+	/*
+	 * public void reportTitle(String title, String discription) { logger =
+	 * report.createTest(title, discription); }
+	 */
 
 	/**
 	 * To have information on extent report.
@@ -59,8 +98,28 @@ public class BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	public static void logInfo(String info) {
-		logger.log(LogStatus.INFO, info);
+		logger.log(Status.INFO, info);
+		// ExtendReport.logInfo(info);
+	}
 
+	/**
+	 * This method is to show the pass status
+	 * 
+	 * @param details
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public static void passStatus(String details) {
+		logger.log(Status.PASS, details);
+	}
+
+	/**
+	 * This method is to show the fail status
+	 * 
+	 * @param details
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public static void faileStatus(String details) {
+		logger.log(Status.FAIL, details);
 	}
 
 	/**
@@ -82,10 +141,29 @@ public class BaseSuite {
 		}
 		String ssName = System.getProperty("user.dir") + File.separator + "\\TestReports\\ScreenShot\\" + methodName
 				+ "\\" + screenshotName + ".png";
-		String image = logger.addScreenCapture(ssName);
+		// To add screenshot path in report
+		logger.log(Status.INFO, "ScreenShotPath: " + ssName);
+
+		try {
+			logger.log(Status.INFO, screenshotName + " Attached Below");
+			logger.info(screenshotName, MediaEntityBuilder.createScreenCaptureFromPath(ssName).build());
+			// logger.addScreenCaptureFromPath(ssName);
+			// logger.addScreencastFromPath(ssName);
+			// logger.info(screenshotName,
+			// MediaEntityBuilder.createScreenCaptureFromPath(ssName).build());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
+	/**
+	 * Swipe down in mobile app
+	 * 
+	 * @param driver
+	 * @author vinothkumar.p08@infosys.com
+	 */
 	public static void swipeDownInMobileApp(MobileDriver driver) {
 		Dimension dim = driver.manage().window().getSize();
 		int height = dim.getHeight();
@@ -99,6 +177,12 @@ public class BaseSuite {
 
 	}
 
+	/**
+	 * Swipe based on co-ordinates
+	 * 
+	 * @param driver
+	 * @author vinothkumar.p08@infosys.com
+	 */
 	public static void swipe(MobileDriver driver) {
 		TouchAction ta = new TouchAction(driver);
 		int x = 247;
@@ -107,6 +191,13 @@ public class BaseSuite {
 		ta.press(x, y).waitAction(1000).moveTo(x, b).release().perform();
 	}
 
+	/**
+	 * Wait for an element
+	 * 
+	 * @param driver
+	 * @param element
+	 * @author vinothkumar.p08@infosys.com
+	 */
 	public static void waitForElement(MobileDriver driver, WebElement element) {
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 		wait.until(ExpectedConditions.visibilityOf(element));
@@ -117,6 +208,7 @@ public class BaseSuite {
 	 * 
 	 * @param elements
 	 * @param productName
+	 * @author vinothkumar.p08@infosys.com
 	 */
 	public static String getTextOnPage(MobileDriver driver, List<WebElement> elements, String productName) {
 		String validatedText = null;
@@ -137,6 +229,7 @@ public class BaseSuite {
 	 * @param discription
 	 * @param actualMessage
 	 * @param expectedMessage
+	 * @author vinothkumar.p08@infosys.com
 	 */
 	public static void compareMessage(String discription, String actualMessage, String expectedMessage) {
 		if (expectedMessage != null && actualMessage != null) {
@@ -144,7 +237,20 @@ public class BaseSuite {
 				log.info("Expected and Actual Messages are same");
 				log.info("Expected Message: " + expectedMessage);
 				log.info("Actual Message: " + actualMessage);
+				logger.log(Status.INFO, "Expected and Actual Messages are same");
+				logger.log(Status.INFO, "Expected Message: " + "<b>" + expectedMessage + "</b>");
+				logger.log(Status.INFO, "Actual Message: " + "<b>" + actualMessage + "</b>");
+				logger.log(Status.PASS,
+						discription + "Expected = <font face=\"verdana\" color=\"green\">" + expectedMessage + "</font>"
+								+ "Actual = <font face=\"verdana\" color=\"green\"> " + actualMessage + "</font>");
+				logger.log(Status.PASS, "Test Case Passed");
+
 			} else {
+
+				logger.log(Status.FAIL, "Expected = <font face=\"verdana\" color=\"red\">" + expectedMessage + "</font>"
+						+ "Actual = <font face=\"verdana\" color=\"red\"> " + actualMessage + "</font>");
+				logger.log(Status.FAIL, "Test Case Failed");
+
 				Assert.fail(
 						"Actual & Expected Messages are not matched. Hence failing the validation. Compared messages are: "
 								+ actualMessage + " & " + expectedMessage);
@@ -155,11 +261,13 @@ public class BaseSuite {
 	}
 
 	/**
+	 * Handling Excel File
 	 * 
 	 * @param xlFilePath
 	 * @param sheetName
 	 * @return
 	 * @throws Exception
+	 * @author vinothkumar.p08@infosys.com
 	 */
 	public Object[][] testData() throws Exception {
 		// String s = System.getProperty("user.dir") + File.separator;

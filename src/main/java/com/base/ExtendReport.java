@@ -1,23 +1,54 @@
 package com.base;
 
-import java.io.File;
-
-import com.relevantcodes.extentreports.ExtentReports;
-import com.relevantcodes.extentreports.ExtentTest;
-import com.relevantcodes.extentreports.LogStatus;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 
 public class ExtendReport {
 	// creating obj
-	static ExtentReports report;
-	static ExtentTest logger;
+	static ExtentTest logger = null;
+	static ExtentReports report = null;
+	static ExtentHtmlReporter htmlReporter;
 
 	public static void extendReport() {
-		report = new ExtentReports(System.getProperty("user.dir") + File.separator + "//TestReport//TestReport.html");
-		System.out.println("report is: " + report);
-		logger = report.startTest("Automation Report");
+		htmlReporter = new ExtentHtmlReporter("./TestReports/ExtentReport/TestReport.html");
+		System.out.println("Report created");
+		report = new ExtentReports();
+		report.attachReporter(htmlReporter);
+		logger = report.createTest("MyFirstTest", "Sample description");
+	}
+	
+	public static void completeReport(){
+		report.flush();
 	}
 
+	/**
+	 * To have information on extent report.
+	 * 
+	 * @param info
+	 * @author vinothkumar.p08@infosys.com
+	 */
 	public static void logInfo(String info) {
-		logger.log(LogStatus.INFO, info);
+		logger.log(Status.INFO, info);
 	}
+
+	/**
+	 * This method is to show the pass status
+	 * 
+	 * @param details
+	 */
+	public static void passStatus(String details) {
+		logger.log(Status.PASS, details);
+	}
+
+	/**
+	 * This method is to show the fail status
+	 * 
+	 * @param details
+	 */
+	public static void faileStatus(String details) {
+		logger.log(Status.FAIL, details);
+	}
+
 }

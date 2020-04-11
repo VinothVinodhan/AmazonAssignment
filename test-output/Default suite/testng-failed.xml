@@ -5,9 +5,9 @@
     <classes>
       <class name="com.ebay.testcase.EbayTestCase">
         <methods>
-          <include name="purchaseItem"/>
-          <include name="afterSuite"/>
-          <include name="extendReport"/>
+          <include name="purchaseItem" invocation-numbers="0"/>
+          <include name="completeTestCase"/>
+          <include name="extentReport"/>
         </methods>
       </class> <!-- com.ebay.testcase.EbayTestCase -->
     </classes>

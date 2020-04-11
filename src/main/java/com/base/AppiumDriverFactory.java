@@ -11,7 +11,6 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
-import com.ebay.page.EbayAppPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pojo.AppInfoPojo;
 
@@ -35,7 +34,7 @@ public class AppiumDriverFactory {
 	static // Android Driver
 	AppiumDriver driver = null;
 	// static ExtendReport report = new ExtendReport();
-	Logger log = Logger.getLogger(AppiumDriverFactory.class);
+	static Logger logs = Logger.getLogger(AppiumDriverFactory.class);
 
 	/**
 	 * To Read json file using AppInfoPojo
@@ -50,6 +49,7 @@ public class AppiumDriverFactory {
 
 		// convert json string to object
 		appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+
 	}
 
 	/**
@@ -70,7 +70,8 @@ public class AppiumDriverFactory {
 		service.start();
 
 		BaseSuite.logInfo("Appium Server Started");
-		System.out.println("Appium Server Started");
+		BaseSuite.logInfo("Appium Server IP Address: " + appinfo.getAppiumIP());
+		BaseSuite.logInfo("Appium Server Port" + appinfo.getPort());
 		serverstarted = true;
 	}
 
@@ -82,7 +83,9 @@ public class AppiumDriverFactory {
 	public static void stopAppium() {
 		if (serverstarted) {
 			service.stop();
-			System.out.println("Appium Server Stopped");
+			logs.info("Appium Server Stopped");
+			BaseSuite.logInfo("Appium Server Stopped");
+
 		} else {
 			serverstarted = false;
 		}
@@ -117,13 +120,18 @@ public class AppiumDriverFactory {
 		cap.setCapability(MobileCapabilityType.DEVICE_NAME, devicename);
 		cap.setCapability(MobileCapabilityType.PLATFORM_NAME, MobilePlatform.ANDROID);
 		cap.setCapability("appPackage", appinfo.getAPPPACKAGE());
+		BaseSuite.logInfo("App Package: " + appinfo.getAPPPACKAGE());
+		logs.info("App Package: " + appinfo.getAPPPACKAGE());
 		cap.setCapability("appActivity", appinfo.getAPPACTIVITY());
+		BaseSuite.logInfo("App Activity: " + appinfo.getAPPACTIVITY());
+		logs.info("App Activity: " + appinfo.getAPPACTIVITY());
 		cap.setCapability("appWaitActivity", appinfo.getAPPACTIVITY());
 		cap.setCapability("automationName", "uiautomator2");
 
 		BaseSuite.logInfo(
 				"Appium URL is: " + "http://" + appinfo.getAppiumIP().trim() + ":" + appinfo.getPort() + "/wd/hub");
 		System.out.println("URL is: " + "http://" + appinfo.getAppiumIP().trim() + ":" + appinfo.getPort() + "/wd/hub");
+		logs.info("Appium URL is: " + "http://" + appinfo.getAppiumIP().trim() + ":" + appinfo.getPort() + "/wd/hub");
 
 		try {
 			driver = new AndroidDriver(
@@ -187,6 +195,11 @@ public class AppiumDriverFactory {
 	 */
 	public static void closeApp() {
 		driver.closeApp();
+		logs.info("Closed the App");
+		BaseSuite.logInfo("Closed the App");
+		driver.removeApp(appinfo.getAPPPACKAGE());
+		logs.info("Uninstalled application package: " + appinfo.getAPPPACKAGE());
+		BaseSuite.logInfo("Uninstalled application package: " + appinfo.getAPPPACKAGE());
 		System.out.println("Closed the App");
 	}
 
