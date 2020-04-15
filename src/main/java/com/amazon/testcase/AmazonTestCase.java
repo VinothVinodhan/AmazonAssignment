@@ -60,8 +60,16 @@ public class AmazonTestCase extends BaseSuite {
 	}
 
 	@DataProvider
-	public Object[][] purchaseItemDataProvider(ITestContext testContext) throws Exception {
-		Object[][] data = testData();
+	public Object[][] purchaseItemDataProvider(ITestContext testContext) {
+		Object[][] data = null;
+		try {
+			data = testData();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			log.info(e);
+			BaseSuite.logException(e);
+		}
 		return data;
 	}
 

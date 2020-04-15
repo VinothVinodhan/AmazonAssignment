@@ -1,6 +1,5 @@
 package com.amazon.pages;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -33,12 +32,7 @@ public class HomePage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	public HomePage(String deviceName, String appName) {
-		try {
-			driver = (AndroidDriver) obj.getAppiumDriver();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		driver = (AndroidDriver) obj.getAppiumDriver();
 		PageFactory.initElements(driver, this);
 
 	}
@@ -191,17 +185,25 @@ public class HomePage extends BaseSuite {
 		clickAddToCart(methodName);
 		BaseSuite.getScreenShot(driver, "After Clicking on Add To Cart", methodName);
 
-		// // Creating obj for checkout page
-		// CheckOut checkoutPage = new CheckOut(driver);
-		// checkoutPage.cartPage(methodName);
-		//
-		// // To handle cart page
-		// cartPage(methodName);
-
+		// To handle cart page
+		cartPage(methodName);
 		return result;
-
 	}
 
+	/**
+	 * Method is just to handle home page and search & select the product based
+	 * on user's search.
+	 * 
+	 * @param methodName
+	 * @param searchProduct
+	 * @param requiredItem
+	 * @param mobileNumber
+	 * @param password
+	 * @param language
+	 * @param pincode
+	 * @return
+	 * @author vinothkumar.p08@infosys.com
+	 */
 	public Result searchAndSelect(String methodName, String searchProduct, String requiredItem, String mobileNumber,
 			String password, String language, String pincode) {
 

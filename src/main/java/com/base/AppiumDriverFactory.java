@@ -11,10 +11,11 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pojo.AppInfoPojo;
 
-import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
@@ -42,13 +43,37 @@ public class AppiumDriverFactory {
 	 * @throws IOException
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	private static void readAppInfo() throws IOException {
+	private static void readAppInfo() {
 		// read json file data to String
-		jsonData = Files
-				.readAllBytes(Paths.get(System.getProperty("user.dir") + File.separator + "//config//AppsInfo.json"));
+		try {
+			jsonData = Files.readAllBytes(
+					Paths.get(System.getProperty("user.dir") + File.separator + "//config//AppsInfo.json"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logs.info(e);
+			BaseSuite.logException(e);
+		}
 
 		// convert json string to object
-		appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+		try {
+			appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logs.info(e);
+			BaseSuite.logException(e);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logs.info(e);
+			BaseSuite.logException(e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logs.info(e);
+			BaseSuite.logException(e);
+		}
 
 	}
 
@@ -58,7 +83,7 @@ public class AppiumDriverFactory {
 	 * @throws IOException
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public static void startAppium() throws IOException {
+	public static void startAppium() {
 		readAppInfo();
 		builder = new AppiumServiceBuilder();
 		builder.withIPAddress(appinfo.getAppiumIP());
@@ -100,11 +125,28 @@ public class AppiumDriverFactory {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 
-	public static WebDriver getAppiumDriver() throws IOException {
+	public static WebDriver getAppiumDriver() {
 		String devicename = "Android";
 		startAppium();
 		// convert json string to object
-		appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+		try {
+			appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+		} catch (JsonParseException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			logs.info(e1);
+			BaseSuite.logException(e1);
+		} catch (JsonMappingException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			logs.info(e1);
+			BaseSuite.logException(e1);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			logs.info(e1);
+			BaseSuite.logException(e1);
+		}
 		DesiredCapabilities cap = new DesiredCapabilities();
 
 		File app = new File(System.getProperty("user.dir") + File.separator + appinfo.getPath());
@@ -137,8 +179,8 @@ public class AppiumDriverFactory {
 			driver = new AndroidDriver(
 					new URL("http://" + appinfo.getAppiumIP().trim() + ":" + appinfo.getPort() + "/wd/hub"), cap);
 		} catch (MalformedURLException e) {
-			logs.info(e);
 			e.printStackTrace();
+			logs.info(e);
 		}
 
 		result.setDriver(driver);

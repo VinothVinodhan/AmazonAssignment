@@ -94,6 +94,18 @@ public class BaseSuite {
 	 */
 
 	/**
+	 * To print the exception in extent report.
+	 * 
+	 * @param e
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public static void logException(Exception e) {
+		logger.log(Status.FAIL, e);
+		Assert.fail("Failed due to the exception.", e);
+
+	}
+
+	/**
 	 * To have information on extent report.
 	 * 
 	 * @param info
@@ -140,6 +152,8 @@ public class BaseSuite {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			log.info(e);
+			logException(e);
 		}
 		String ssName = System.getProperty("user.dir") + File.separator + "\\TestReports\\ScreenShot\\" + methodName
 				+ "\\" + screenshotName + ".png";
@@ -156,6 +170,8 @@ public class BaseSuite {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			log.info(e);
+			logException(e);
 		}
 
 	}

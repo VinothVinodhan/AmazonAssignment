@@ -1,7 +1,10 @@
 package com.base;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.util.NumberToTextConverter;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -9,6 +12,7 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelRead {
+	Logger log = Logger.getLogger(ExcelRead.class);
 	public FileInputStream fis = null;
 	public XSSFWorkbook workbook = null;
 	public XSSFSheet sheet = null;
@@ -16,11 +20,32 @@ public class ExcelRead {
 	public XSSFCell cell = null;
 	String xlFilePath;
 
-	public ExcelRead(String xlFilePath) throws Exception {
+	public ExcelRead(String xlFilePath) {
 		this.xlFilePath = xlFilePath;
-		fis = new FileInputStream(xlFilePath);
-		workbook = new XSSFWorkbook(fis);
-		fis.close();
+		try {
+			fis = new FileInputStream(xlFilePath);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			log.info(e);
+			BaseSuite.logException(e);
+		}
+		try {
+			workbook = new XSSFWorkbook(fis);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			log.info(e);
+			BaseSuite.logException(e);
+		}
+		try {
+			fis.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			log.info(e);
+			BaseSuite.logException(e);
+		}
 	}
 
 	public int getRowCount(String sheetName) {
