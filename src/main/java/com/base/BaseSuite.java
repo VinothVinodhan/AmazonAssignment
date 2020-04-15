@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
@@ -27,16 +29,14 @@ import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pojo.AppInfoPojo;
-//import com.relevantcodes.extentreports.ExtentReports;
-//import com.relevantcodes.extentreports.ExtentTest;
-//import com.relevantcodes.extentreports.LogStatus;
 
 import io.appium.java_client.MobileDriver;
 import io.appium.java_client.TouchAction;
+import io.appium.java_client.android.AndroidDriver;
 
 public class BaseSuite {
 	static Logger log = Logger.getLogger(BaseSuite.class);
-	static WebDriver driver;
+	static AndroidDriver driver;
 
 	static ExtentTest logger = null;
 	static ExtentReports report = null;
@@ -44,6 +44,19 @@ public class BaseSuite {
 	static byte[] jsonData = null;
 	static AppInfoPojo appinfo = new AppInfoPojo();
 	static ObjectMapper objectMapper = new ObjectMapper();
+
+	public static final int WAIT_TEN_SECONDS = 10;
+
+	/**
+	 * This method is an optional. We can extend to ExtendReport class for
+	 * report generation.
+	 * 
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	@BeforeSuite
+	public void extendReport() {
+		ExtendReport.extendReport();
+	}
 
 	@BeforeTest
 	/**
@@ -73,17 +86,6 @@ public class BaseSuite {
 		AppiumDriverFactory.stopAppium();
 		logInfo("Appium Server Stopped");
 
-	}
-
-	/**
-	 * This method is an optional. We can extend to ExtendReport class for
-	 * report generation.
-	 * 
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	// @BeforeSuite
-	public void extendReport() {
-		ExtendReport.extendReport();
 	}
 
 	/*
@@ -192,6 +194,20 @@ public class BaseSuite {
 	}
 
 	/**
+	 * Swipe based on co-ordinates
+	 * 
+	 * @param driver
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public static void swipeDown(MobileDriver driver) {
+		TouchAction ta = new TouchAction(driver);
+		int x = 268;
+		int y = 176;
+		int b = 350;
+		ta.press(x, y).waitAction(1000).moveTo(x, b).release().perform();
+	}
+
+	/**
 	 * Wait for an element
 	 * 
 	 * @param driver
@@ -201,6 +217,38 @@ public class BaseSuite {
 	public static void waitForElement(MobileDriver driver, WebElement element) {
 		WebDriverWait wait = new WebDriverWait(driver, 60);
 		wait.until(ExpectedConditions.visibilityOf(element));
+	}
+
+	/**
+	 * Wait for given seconds and click the element.
+	 * 
+	 * @param driver
+	 * @param element
+	 * @param waitTimeInSeconds
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public void waitAndClick(MobileDriver driver, WebElement element, int waitTimeInSeconds) {
+		WebDriverWait wait = new WebDriverWait(driver, waitTimeInSeconds);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		element.click();
+	}
+
+	/**
+	 * This method is to enter given string into a text editor.
+	 * 
+	 * @param driver
+	 * @param element
+	 * @param waitTimeInSeconds
+	 * @param text
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public void enterText(MobileDriver driver, WebElement element, int waitTimeInSeconds, String text) {
+		WebDriverWait wait = new WebDriverWait(driver, waitTimeInSeconds);
+		wait.until(ExpectedConditions.elementToBeClickable(element));
+		element.click();
+		element.clear();
+		element.clear();
+		element.sendKeys(text);
 	}
 
 	/**
@@ -247,8 +295,9 @@ public class BaseSuite {
 
 			} else {
 
-				logger.log(Status.FAIL, "Expected = <font face=\"verdana\" color=\"red\">" + expectedMessage + "</font>"
-						+ "Actual = <font face=\"verdana\" color=\"red\"> " + actualMessage + "</font>");
+				logger.log(Status.FAIL,
+						"Expected = <font face=\"verdana\" color=\"red\"> " + expectedMessage + "</font><br/>"
+								+ "Actual = <font face=\"verdana\" color=\"red\">" + actualMessage + "</font><br/>");
 				logger.log(Status.FAIL, "Test Case Failed");
 
 				Assert.fail(
@@ -310,6 +359,18 @@ public class BaseSuite {
 		appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
 
 		return appinfo;
+	}
+
+	/**
+	 * Method will give random integer value.
+	 * 
+	 * @return
+	 */
+	public static int randomInt() {
+		int max = 3;
+		Random rand = new Random();
+		int randomIntValue = rand.nextInt(max);
+		return randomIntValue;
 	}
 
 }

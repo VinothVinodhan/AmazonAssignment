@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="EbayAutomation" parallel="false">
+<suite name="AmazonAutomation" parallel="false">
 	<test name="purchaseItem">
 		<classes>
-			<class name="com.ebay.testcase.EbayTestCase">
+			<class name="com.amazon.testcase.AmazonTestCase">
 				<methods>
 					<include name="purchaseItem"></include>
 				</methods>

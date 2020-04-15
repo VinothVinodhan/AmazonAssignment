@@ -31,10 +31,10 @@ public class AppiumDriverFactory {
 	// create ObjectMapper instance
 	static ObjectMapper objectMapper = new ObjectMapper();
 	static byte[] jsonData = null;
-	static // Android Driver
-	AppiumDriver driver = null;
+	static AndroidDriver driver = null;
 	// static ExtendReport report = new ExtendReport();
 	static Logger logs = Logger.getLogger(AppiumDriverFactory.class);
+	static Result result = new Result();
 
 	/**
 	 * To Read json file using AppInfoPojo
@@ -137,8 +137,11 @@ public class AppiumDriverFactory {
 			driver = new AndroidDriver(
 					new URL("http://" + appinfo.getAppiumIP().trim() + ":" + appinfo.getPort() + "/wd/hub"), cap);
 		} catch (MalformedURLException e) {
+			logs.info(e);
 			e.printStackTrace();
 		}
+
+		result.setDriver(driver);
 		return driver;
 	}
 
