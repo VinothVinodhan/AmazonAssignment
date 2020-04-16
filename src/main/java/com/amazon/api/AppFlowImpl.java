@@ -40,7 +40,7 @@ public class AppFlowImpl {
 		login.login(methodName, mobileNumber, password);
 
 		// Method tor search and select the product
-		result = appPage.searchAndSelect(methodName, searchProduct, requiredItem, mobileNumber, password, language,
+		result = appPage.searchAndSelectProduct(methodName, searchProduct, requiredItem, mobileNumber, password, language,
 				pincode);
 
 		// Method to validate product page
@@ -48,7 +48,7 @@ public class AppFlowImpl {
 		product.validateProduct(methodName, language);
 
 		CheckOut checkoutPage = new CheckOut(driver);
-		checkoutPage.cartPage(methodName);
+		checkoutPage.validateCartPage(methodName);
 
 		// Put the information into log file.
 		log.info("Items are: " + result.getProductName() + "&" + result.getProductQuantiy() + "&"

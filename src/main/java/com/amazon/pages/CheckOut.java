@@ -54,12 +54,12 @@ public class CheckOut extends BaseSuite {
 	private WebElement cartIcon;
 
 	/**
-	 * Handling cart page by taking cost & name of the product.
+	 * Validating product on cart page by taking cost & name of the product.
 	 * 
 	 * @param methodName
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public void cartPage(String methodName) {
+	public void validateCartPage(String methodName) {
 		// To click cart icon
 		clickCart();
 

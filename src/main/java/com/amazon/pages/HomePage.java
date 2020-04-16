@@ -121,7 +121,8 @@ public class HomePage extends BaseSuite {
 	String productCost = null;
 
 	/**
-	 * To search for the product
+	 * Method to handle home page and search & select the product based on
+	 * user's search.
 	 * 
 	 * @param methodName
 	 * @param searchProduct
@@ -133,78 +134,7 @@ public class HomePage extends BaseSuite {
 	 * @return
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public Result searchPurchaseItem(String methodName, String searchProduct, String requiredItem, String mobileNumber,
-			String password, String language, String pincode) {
-
-		// Invoking method to login
-		login(methodName, mobileNumber, password);
-		BaseSuite.getScreenShot(driver, "Home Page of an application", methodName);
-
-		// Method to entering Pin Code. It's an optional
-		// enterPincode(pincode);
-
-		// Selecting language after loggd into the account
-		selectLanguage(methodName, language);
-
-		// Search and Product
-		searchSelect(methodName, requiredItem);
-		productName = result.getProductName();
-
-		// Take screenshot
-		BaseSuite.logInfo("After selecting the product from searched result.");
-		BaseSuite.getScreenShot(driver, "Selected Item", methodName);
-		log.info("Search Result Page screenshot taken");
-
-		// To get size of the product
-		String sizeOfItem = sizeOfProduct(methodName);
-		System.out.println("Returned from sizeOfItem method: " + sizeOfItem);
-
-		swipe(driver);
-
-		String costOnProduct = getTextOnPageBackup(textsOnThePage, "rupees");
-		result.setProductCost(costOnProduct);
-		BaseSuite.logInfo("Product Cost on Selected Item Page: " + costOnProduct);
-
-		// to swipe down till quantity appear
-		for (int a = 0; a < 1; a++) {
-			swipe(driver);
-		}
-
-		// To select One Time Purchase radio button
-		try {
-			selectOneTimePurchase(methodName);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		// below code is to take quantity from dropdown
-		String qty = readQuantity(methodName);
-		System.out.println("Selected Quantity: " + qty);
-
-		// To click on add to cart
-		clickAddToCart(methodName);
-		BaseSuite.getScreenShot(driver, "After Clicking on Add To Cart", methodName);
-
-		// To handle cart page
-		cartPage(methodName);
-		return result;
-	}
-
-	/**
-	 * Method is just to handle home page and search & select the product based
-	 * on user's search.
-	 * 
-	 * @param methodName
-	 * @param searchProduct
-	 * @param requiredItem
-	 * @param mobileNumber
-	 * @param password
-	 * @param language
-	 * @param pincode
-	 * @return
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	public Result searchAndSelect(String methodName, String searchProduct, String requiredItem, String mobileNumber,
+	public Result searchAndSelectProduct(String methodName, String searchProduct, String requiredItem, String mobileNumber,
 			String password, String language, String pincode) {
 
 		// Entering Pin Code is optional
@@ -214,7 +144,7 @@ public class HomePage extends BaseSuite {
 		selectLanguage(methodName, language);
 
 		// Search and Product
-		searchSelect(methodName, requiredItem);
+		selectProduct(methodName, requiredItem);
 		productName = result.getProductName();
 
 		// Take screenshot
@@ -226,47 +156,13 @@ public class HomePage extends BaseSuite {
 	}
 
 	/**
-	 * Handleing cart page by taking cost & name of the product.
-	 * 
-	 * @param methodName
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	private void cartPage(String methodName) {
-		// To click cart icon
-		clickCart();
-
-		// To get the product name on the cart page
-		String requiredProductName = getTextOnPage(driver, text, productName);
-		System.out.println("Validated ProductName on Cart Page is: " + requiredProductName);
-		BaseSuite.logInfo("Validated ProductName on Cart Page is: " + requiredProductName);
-		log.info("Validated ProductName on Cart Page is: " + requiredProductName);
-		BaseSuite.getScreenShot(driver, "Cart Page", methodName);
-
-		// Below code is to get item cost on cart page
-		try {
-			String costOnCartPage = costElementCart.getText();
-			BaseSuite.logInfo("Cost on Cart Page: " + costOnCartPage);
-			System.out.println("Cost on Cart Page: " + costOnCartPage);
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		String costOncartPage = getTextOnPageBackup(textsOnThePage, ".00");
-		BaseSuite.logInfo("Cost on Cart Page: " + costOncartPage);
-		result.setCostOnCart(costOncartPage);
-
-		// To delete an item
-		clickButton("Delete");
-	}
-
-	/**
 	 * Search and select a product.
 	 * 
 	 * @param methodName
 	 * @param requiredItem
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	private void searchSelect(String methodName, String requiredItem) {
+	private void selectProduct(String methodName, String requiredItem) {
 		// Search and Product
 		searchItem(methodName, requiredItem);
 
@@ -301,56 +197,6 @@ public class HomePage extends BaseSuite {
 
 			}
 		}
-	}
-
-	/**
-	 * Method is to login to the application
-	 * 
-	 * @param mobileNumber
-	 * @param password
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	private void login(String methodName, String mobileNumber, String password) {
-
-		getScreenShot(driver, "Before Login screen", methodName);
-		waitForElement(driver, signIn);
-		signIn.click();
-
-		waitForElement(driver, radioButton);
-		for (WebElement radioButton : radioButtons) {
-			System.out.println(radioButton.getText());
-			if (radioButton.getText().contains("Login. Already a customer?")) {
-				radioButton.click();
-				getScreenShot(driver, "Login Method", methodName);
-			}
-		}
-
-		waitForElement(driver, loginText);
-		loginText.click();
-		loginText.sendKeys(mobileNumber);
-
-		waitForElement(driver, continueButton);
-		continueButton.click();
-
-		waitForElement(driver, loginText);
-		loginText.click();
-		loginText.clear();
-		loginText.clear();
-		loginText.sendKeys(password);
-		loginText.clear();
-		loginText.sendKeys(password);
-
-		// De-Selecting the show password check box
-		try {
-			waitForElement(driver, showPassword);
-			showPassword.click();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
-		waitForElement(driver, continueButton);
-		continueButton.click();
-
 	}
 
 	/**
@@ -398,43 +244,6 @@ public class HomePage extends BaseSuite {
 			if (saveButton.getText().contains("Save")) {
 				saveButton.click();
 				BaseSuite.logInfo("Clicked on Save button after saving language");
-			}
-		}
-
-	}
-
-	/**
-	 * To read the quantity appeared on product page before clicking add to cart
-	 * button.
-	 * 
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	private String readQuantity(String methodName) {
-		// below code is to take quantity from dropdown
-		System.out.println("Quantity of the product: " + quantity.getText());
-		quantityOfProduct = quantity.getText();
-		result.setProductQuantiy(quantityOfProduct);
-		getScreenShot(driver, "Quantity", methodName);
-		return quantityOfProduct;
-	}
-
-	/**
-	 * To click One-Time-Purchase radio button. This is an optional
-	 * 
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	private void selectOneTimePurchase(String methodName) {
-		for (WebElement radioBtns : radioButtons) {
-			System.out.println("Radio button available: " + radioBtns.getText());
-			if (radioBtns.getText().contains("One-time purchase")) {
-				String itemValue = radioBtns.getText();
-				System.out.println("Item value on One-Time Purchase is: " + itemValue);
-				int size = itemValue.length();
-				System.out.println("Size of the radio button text is: " + size);
-				String cost = itemValue.substring(11);
-				System.out.println("Cost of item: " + cost);
-				radioBtns.click();
-				BaseSuite.getScreenShot(driver, "One-Time-Purchase", methodName);
 			}
 		}
 
@@ -524,49 +333,6 @@ public class HomePage extends BaseSuite {
 	}
 
 	/**
-	 * To get the size of the product
-	 * 
-	 * @param methodName
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	private String sizeOfProduct(String methodName) {
-		for (WebElement btns : buttons) {
-			System.out.println("Button name: " + btns.getText());
-			if (btns.getText().contains("Size: ")) {
-				String size = btns.getText();
-				System.out.println("Size of the procuct is: " + size);
-				System.out.println(size.length());
-				sizeOfOil = size.substring(7);
-				System.out.println(size.substring(7));
-				result.setSizeOfOil(sizeOfOil);
-				BaseSuite.getScreenShot(driver, "Selected Item", methodName);
-				break;
-			}
-		}
-		return sizeOfOil;
-	}
-
-	/**
-	 * To click add to cart button
-	 * 
-	 * @param methodName
-	 * @param buttonName
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	private void clickAddToCart(String methodName) {
-		// swipe(driver);
-		for (WebElement btns : buttons) {
-			System.out.println("Button name: " + btns.getText());
-			if (btns.getText().contains("Add to Cart")) {
-				BaseSuite.getScreenShot(driver, "Before clicking Add to Cart", methodName);
-				btns.click();
-				break;
-			}
-
-		}
-	}
-
-	/**
 	 * To get the product Name
 	 * 
 	 * @param elements
@@ -584,22 +350,6 @@ public class HomePage extends BaseSuite {
 			}
 		}
 		return productCost;
-	}
-
-	/**
-	 * To click cart icon
-	 * 
-	 * @author vinothkumar.p08@infosys.com
-	 */
-	public void clickCart() {
-
-		try {
-
-			cartIcon2.click();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-
 	}
 
 }
