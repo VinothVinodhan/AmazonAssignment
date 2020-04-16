@@ -27,26 +27,25 @@ public class AppFlowImpl {
 	 * @param pincode
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public void purchaseItem(String methodName, String searchProduct, String requiredItem, String mobileNumber,
+	public void purchaseItemApi(String methodName, String searchProduct, String requiredItem, String mobileNumber,
 			String password, String language, String pincode) {
 		Result result = new Result();
 		HomePage appPage = new HomePage("Android", "Amazon");
 
-		// getting driver from result class
+		// Getting driver from result class
 		driver = (AndroidDriver) result.getDriver();
 
-		// Invoking method for login
+		// Method to handle login page
 		LoginPage login = new LoginPage(driver);
 		login.login(methodName, mobileNumber, password);
 
-		// invoking method for search and select the product
+		// Method tor search and select the product
 		result = appPage.searchAndSelect(methodName, searchProduct, requiredItem, mobileNumber, password, language,
 				pincode);
 
-		// Invoking method to validate product page
+		// Method to validate product page
 		ProductPage product = new ProductPage(driver);
-		// Calling method to handle product page.
-		product.product(methodName, language);
+		product.validateProduct(methodName, language);
 
 		CheckOut checkoutPage = new CheckOut(driver);
 		checkoutPage.cartPage(methodName);
@@ -55,12 +54,12 @@ public class AppFlowImpl {
 		log.info("Items are: " + result.getProductName() + "&" + result.getProductQuantiy() + "&"
 				+ result.getSizeOfOil());
 
-		// Invoking method to compare the strings
+		// Method to compare the inputs
 		BaseSuite.compareMessage("Product Name Comparision between input and appeared on checkout page",
 				result.getProductName(), requiredItem);
 
-		// Comparing cost on Cart & product page
-		BaseSuite.compareMessage("Comparing Cost of an item between product selected page & Cart page.",
+		// Validating cost on Product detail & Cart page
+		BaseSuite.validateMessage("Comparing Cost of an item between product selected page & Cart page.",
 				result.getProductCost(), result.getCostOnCart());
 
 	}

@@ -47,7 +47,7 @@ public class HomePage extends BaseSuite {
 	private WebElement firstItemTitle;
 
 	@FindBy(id = "add-to-cart-button")
-	private WebElement addToCartBtn;
+	private WebElement addToCartButton;
 
 	@FindBy(id = "com.amazon.mShop.android.shopping:id/chrome_action_bar_cart_image")
 	private WebElement cartIcon;
@@ -62,16 +62,16 @@ public class HomePage extends BaseSuite {
 	private WebElement cartIcon3;
 
 	@FindBy(className = "android.widget.Button")
-	private List<WebElement> btn;
+	private List<WebElement> buttons;
 
 	@FindBy(className = "android.widget.Button")
 	private WebElement continueButton;
 
 	@FindBy(className = "android.widget.RadioButton")
-	private List<WebElement> radioBtns;
+	private List<WebElement> radioButtons;
 
 	@FindBy(className = "android.widget.RadioButton")
-	private WebElement radioBtn;
+	private WebElement radioButton;
 
 	@FindBy(className = "android.widget.Image")
 	private List<WebElement> text;
@@ -107,7 +107,7 @@ public class HomePage extends BaseSuite {
 	private WebElement showPassword;
 
 	@FindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.RelativeLayout/android.widget.RelativeLayout[2]/android.widget.RelativeLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ViewAnimator/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.View/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[3]/android.view.View[4]/android.view.View/android.view.View[2]/android.view.View[1]/android.view.View/android.view.View/android.widget.EditText")
-	private WebElement costElement;
+	private WebElement costOfProduct;
 
 	@FindBy(xpath = "/hierarchy/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.support.v4.widget.DrawerLayout/android.widget.RelativeLayout/android.widget.RelativeLayout[2]/android.widget.RelativeLayout/android.widget.FrameLayout/android.widget.LinearLayout/android.widget.LinearLayout[2]/android.widget.ViewAnimator/android.widget.LinearLayout/android.widget.LinearLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.FrameLayout/android.view.View/android.widget.FrameLayout/android.widget.FrameLayout/android.widget.RelativeLayout/android.widget.RelativeLayout/android.webkit.WebView/android.webkit.WebView/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View/android.view.View[2]/android.view.View[1]/android.view.View/android.view.View/android.view.View[1]/android.view.View[4]/android.view.View[1]/android.view.View/android.view.View[2]")
 	private WebElement deleveryBy;
@@ -140,8 +140,8 @@ public class HomePage extends BaseSuite {
 		login(methodName, mobileNumber, password);
 		BaseSuite.getScreenShot(driver, "Home Page of an application", methodName);
 
-		// Entering Pin Code is optional
-		// enterPincode();
+		// Method to entering Pin Code. It's an optional
+		// enterPincode(pincode);
 
 		// Selecting language after loggd into the account
 		selectLanguage(methodName, language);
@@ -293,7 +293,7 @@ public class HomePage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private void clickButton(String buttonName) {
-		for (WebElement button : btn) {
+		for (WebElement button : buttons) {
 			System.out.println("Button Text: " + button.getText());
 			if (button.getTagName().contains("Delete")) {
 				button.click();
@@ -316,8 +316,8 @@ public class HomePage extends BaseSuite {
 		waitForElement(driver, signIn);
 		signIn.click();
 
-		waitForElement(driver, radioBtn);
-		for (WebElement radioButton : radioBtns) {
+		waitForElement(driver, radioButton);
+		for (WebElement radioButton : radioButtons) {
 			System.out.println(radioButton.getText());
 			if (radioButton.getText().contains("Login. Already a customer?")) {
 				radioButton.click();
@@ -382,9 +382,9 @@ public class HomePage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private void selectLanguage(String methodName, String language) {
-		waitForElement(driver, radioBtn);
+		waitForElement(driver, radioButton);
 		// Selecting Lanugage based on user input
-		for (WebElement radioButton : radioBtns) {
+		for (WebElement radioButton : radioButtons) {
 			System.out.println("Languages appeared on the screen: " + radioButton.getText());
 			if (radioButton.getText().contains(language)) {
 				BaseSuite.logInfo("Selected Language: " + " <b> " + language + "</b>");
@@ -393,7 +393,7 @@ public class HomePage extends BaseSuite {
 		}
 		getScreenShot(driver, "Selected Language", methodName);
 
-		for (WebElement saveButton : btn) {
+		for (WebElement saveButton : buttons) {
 			System.out.println("Buttons name: " + saveButton.getText());
 			if (saveButton.getText().contains("Save")) {
 				saveButton.click();
@@ -424,7 +424,7 @@ public class HomePage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private void selectOneTimePurchase(String methodName) {
-		for (WebElement radioBtns : radioBtns) {
+		for (WebElement radioBtns : radioButtons) {
 			System.out.println("Radio button available: " + radioBtns.getText());
 			if (radioBtns.getText().contains("One-time purchase")) {
 				String itemValue = radioBtns.getText();
@@ -494,9 +494,12 @@ public class HomePage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private String selectRandomItem(int randomNumber) {
+		// Identifying element based on random number
 		String s = "(//android.widget.TextView[@resource-id='com.amazon.mShop.android.shopping:id/item_title'])";
-
+		// Randomized xpath to find the product from search result
 		String xpath = s + "[" + randomNumber + "]";
+		BaseSuite.logInfo("Randomized identifier is: " + xpath);
+		log.info("Randomized identifier is: " + xpath);
 
 		try {
 			BaseSuite.logInfo("Randomly selected product is: " + driver.findElement(By.xpath(xpath)).getText());
@@ -506,15 +509,15 @@ public class HomePage extends BaseSuite {
 			result.setProductName(productName);
 			BaseSuite.logInfo("Product Name selected: " + "<b>" + productName + "</b>");
 		} catch (Exception e) {
-			BaseSuite.logInfo("Random Xpath is: " + xpath);
-			log.info("Random Xpath is: " + xpath);
-			Assert.fail("Element not identified by given xpath: " + xpath);
+			Assert.fail(
+					"Identifier using random integer is not detected the element on the page. Hence failing the test case.");
 		}
 		try {
 			driver.findElement(By.xpath(xpath)).click();
 			BaseSuite.logInfo("Clicked on product");
 		} catch (Exception e) {
-			Assert.fail("Element not identified by given xpath: " + xpath);
+			Assert.fail(
+					"Identifier using random integer is not detected the element on the page. Hence failing the test case.");
 		}
 
 		return productName;
@@ -527,7 +530,7 @@ public class HomePage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private String sizeOfProduct(String methodName) {
-		for (WebElement btns : btn) {
+		for (WebElement btns : buttons) {
 			System.out.println("Button name: " + btns.getText());
 			if (btns.getText().contains("Size: ")) {
 				String size = btns.getText();
@@ -552,7 +555,7 @@ public class HomePage extends BaseSuite {
 	 */
 	private void clickAddToCart(String methodName) {
 		// swipe(driver);
-		for (WebElement btns : btn) {
+		for (WebElement btns : buttons) {
 			System.out.println("Button name: " + btns.getText());
 			if (btns.getText().contains("Add to Cart")) {
 				BaseSuite.getScreenShot(driver, "Before clicking Add to Cart", methodName);
@@ -592,25 +595,7 @@ public class HomePage extends BaseSuite {
 
 		try {
 
-			cartIcon.click();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		try {
-
-			cartIcon1.click();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		try {
-
 			cartIcon2.click();
-		} catch (Exception e) {
-			// TODO: handle exception
-		}
-		try {
-
-			cartIcon3.click();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

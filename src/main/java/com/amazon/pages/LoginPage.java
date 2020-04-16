@@ -31,10 +31,10 @@ public class LoginPage extends BaseSuite {
 	private WebElement signInAnd;
 
 	@FindBy(className = "android.widget.RadioButton")
-	private List<WebElement> radioBtns;
+	private List<WebElement> radioButtons;
 
 	@FindBy(className = "android.widget.RadioButton")
-	private WebElement radioBtn;
+	private WebElement radioButton;
 
 	@FindBy(className = "android.widget.Button")
 	private WebElement continueButton;
@@ -135,8 +135,8 @@ public class LoginPage extends BaseSuite {
 	 */
 	private void loginMethod(String methodName) {
 		// wait for login method radio buttons to be displayed
-		waitForElement(driver, radioBtn);
-		for (WebElement radioButton : radioBtns) {
+		waitForElement(driver, radioButton);
+		for (WebElement radioButton : radioButtons) {
 			System.out.println(radioButton.getText());
 			if (radioButton.getText().contains("Login. Already a customer?")) {
 				// wait and click on radio button

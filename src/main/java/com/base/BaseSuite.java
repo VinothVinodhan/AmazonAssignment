@@ -27,6 +27,8 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pojo.AppInfoPojo;
 
@@ -232,7 +234,14 @@ public class BaseSuite {
 	 */
 	public static void waitForElement(MobileDriver driver, WebElement element) {
 		WebDriverWait wait = new WebDriverWait(driver, 60);
-		wait.until(ExpectedConditions.visibilityOf(element));
+		try {
+			wait.until(ExpectedConditions.visibilityOf(element));
+		} catch (Exception e) {
+			log.info("Given Element not Identified. Hence Failing the Test Execution.");
+			faileStatus("Given Element not Identified. Hence Failing the Test Execution.");
+			logException(e);
+			Assert.fail("Given Element not Identified. Hence Failing the Test Execution.");
+		}
 	}
 
 	/**
@@ -245,8 +254,16 @@ public class BaseSuite {
 	 */
 	public void waitAndClick(MobileDriver driver, WebElement element, int waitTimeInSeconds) {
 		WebDriverWait wait = new WebDriverWait(driver, waitTimeInSeconds);
-		wait.until(ExpectedConditions.elementToBeClickable(element));
-		element.click();
+
+		try {
+			wait.until(ExpectedConditions.elementToBeClickable(element));
+			element.click();
+		} catch (Exception e) {
+			log.info("Given Element not Identified. Hence Failing the Test Execution.");
+			faileStatus("Given Element not Identified. Hence Failing the Test Execution.");
+			logException(e);
+			Assert.fail("Given Element not Identified. Hence Failing the Test Execution.");
+		}
 	}
 
 	/**
@@ -295,7 +312,7 @@ public class BaseSuite {
 	 * @param expectedMessage
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public static void compareMessage(String discription, String actualMessage, String expectedMessage) {
+	public static void validateMessage(String discription, String actualMessage, String expectedMessage) {
 		if (expectedMessage != null && actualMessage != null) {
 			if (expectedMessage.trim().equals(actualMessage)) {
 				log.info("Expected and Actual Messages are same");
@@ -326,6 +343,29 @@ public class BaseSuite {
 	}
 
 	/**
+	 * To compare two string objects
+	 * 
+	 * @param discription
+	 * @param actualMessage
+	 * @param expectedMessage
+	 * @author vinothkumar.p08@infosys.com
+	 */
+	public static void compareMessage(String discription, String actualMessage, String expectedMessage) {
+		if (expectedMessage != null && actualMessage != null) {
+			log.info("Expected Message: " + expectedMessage);
+			log.info("Actual Message: " + actualMessage);
+			logger.log(Status.INFO, "Expected Message: " + "<b>" + expectedMessage + "</b>");
+			logger.log(Status.INFO, "Actual Message: " + "<b>" + actualMessage + "</b>");
+			logger.log(Status.INFO,
+					discription + "Expected = <font face=\"verdana\" color=\"green\">" + expectedMessage
+							+ "</font></br>" + "Actual = <font face=\"verdana\" color=\"green\"> " + actualMessage
+							+ "</font></br>");
+		} else {
+			Assert.fail("Compared Messages are: " + actualMessage + " & " + expectedMessage);
+		}
+	}
+
+	/**
 	 * Handling Excel File
 	 * 
 	 * @param xlFilePath
@@ -334,12 +374,11 @@ public class BaseSuite {
 	 * @throws Exception
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public Object[][] testData() throws Exception {
-		// String s = System.getProperty("user.dir") + File.separator;
-		// String s1 = readAppInfo().getTestData().toString().trim();
-		// String file = s + s1;
+	public Object[][] testData() {
 		String exlFilePath = System.getProperty("user.dir") + File.separator
 				+ readAppInfo().getTestData().toString().trim();
+		logInfo("Test Data Path: " + exlFilePath);
+		log.info("Test Data Path: " + exlFilePath);
 		readAppInfo().getTestData().toString().trim();
 		String sheetName = readAppInfo().getTestSheetName().toString().trim();
 		Object[][] excelData = null;
@@ -366,13 +405,37 @@ public class BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 * @return
 	 */
-	private static AppInfoPojo readAppInfo() throws IOException {
+	private static AppInfoPojo readAppInfo() {
 		// read json file data to String
-		jsonData = Files
-				.readAllBytes(Paths.get(System.getProperty("user.dir") + File.separator + "//config//AppsInfo.json"));
+		try {
+			jsonData = Files.readAllBytes(
+					Paths.get(System.getProperty("user.dir") + File.separator + "//config//AppsInfo.json"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logException(e);
+			Assert.fail("Failed due to Json Data Error", e);
+		}
 
 		// convert json string to object
-		appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+		try {
+			appinfo = objectMapper.readValue(jsonData, AppInfoPojo.class);
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logException(e);
+			Assert.fail("Failed due to JsonParseException", e);
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logException(e);
+			Assert.fail("Failed due to JsonMappingException", e);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logException(e);
+			Assert.fail("Failed due to IOException", e);
+		}
 
 		return appinfo;
 	}

@@ -31,16 +31,16 @@ public class ProductPage extends BaseSuite {
 	}
 
 	@FindBy(className = "android.widget.Button")
-	private List<WebElement> btn;
+	private List<WebElement> buttons;
 
 	@FindBy(className = "android.view.View")
 	private List<WebElement> textsOnThePage;
 
 	@FindBy(className = "android.widget.RadioButton")
-	private List<WebElement> radioBtns;
+	private List<WebElement> radioButtons;
 
 	@FindBy(className = "android.widget.RadioButton")
-	private WebElement radioBtn;
+	private WebElement radioButton;
 
 	@FindBy(className = "android.widget.Spinner")
 	private WebElement quantity;
@@ -57,7 +57,7 @@ public class ProductPage extends BaseSuite {
 	 * @param language
 	 * @author vinothkumar.p08@infosys.com
 	 */
-	public void product(String methodName, String language) {
+	public void validateProduct(String methodName, String language) {
 		// To get size of the product
 		String sizeOfItem = sizeOfProduct(methodName);
 		System.out.println("Returned from sizeOfItem method: " + sizeOfItem);
@@ -76,30 +76,29 @@ public class ProductPage extends BaseSuite {
 		if (costOnProduct == null) {
 			costOnProduct = "null";
 		}
-		// setting product cost
+		// Set the product cost
 		result.setProductCost(costOnProduct);
 		BaseSuite.logInfo("Product Cost on Selected Item Page: " + costOnProduct);
+		log.info("Product Cost on Selected Item Page: " + costOnProduct);
 
 		// to swipe down till quantity appear
 		for (int a = 0; a < 1; a++) {
 			swipe(driver);
 		}
 
-		// To select One Time Purchase radio button
+		// Method to select One Time Purchase radio button
 		try {
 			selectOneTimePurchase(methodName);
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
-		// below code is to take quantity from dropdown
-		String qty = readQuantity(methodName);
-		System.out.println("Selected Quantity: " + qty);
+		// Below code is to take quantity from drop down
+		String quantity = readQuantity(methodName);
+		System.out.println("Selected Quantity: " + quantity);
 
-		// To click on add to cart
+		// Method to click on add to cart
 		clickAddToCart(methodName);
-		BaseSuite.getScreenShot(driver, "After Clicking on Add To Cart", methodName);
-
 	}
 
 	/**
@@ -111,10 +110,10 @@ public class ProductPage extends BaseSuite {
 	private String sizeOfProduct(String methodName) {
 		System.out.println("Page Source of Product Page: " + driver.getPageSource());
 		try {
-			for (WebElement btns : btn) {
-				System.out.println("Button name: " + btns.getText());
-				if (btns.getText().contains("Size: ")) {
-					String size = btns.getText();
+			for (WebElement button : buttons) {
+				System.out.println("Button name: " + button.getText());
+				if (button.getText().contains("Size: ")) {
+					String size = button.getText();
 					System.out.println("Size of the procuct is: " + size);
 					System.out.println(size.length());
 					sizeOfOil = size.substring(7);
@@ -137,18 +136,17 @@ public class ProductPage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private void selectOneTimePurchase(String methodName) {
-		waitForElement(driver, radioBtn);
-		for (WebElement buttons : radioBtns) {
-			System.out.println("Radio button available: " + buttons.getText());
-			if (buttons.getText().contains("One-time purchase")) {
-				String itemValue = buttons.getText();
+		waitForElement(driver, radioButton);
+		for (WebElement radioButton : radioButtons) {
+			System.out.println("Radio button available: " + radioButton.getText());
+			if (radioButton.getText().contains("One-time purchase")) {
+				String itemValue = radioButton.getText();
 				System.out.println("Item value on One-Time Purchase is: " + itemValue);
 				int size = itemValue.length();
 				System.out.println("Size of the radio button text is: " + size);
 				String cost = itemValue.substring(11);
 				System.out.println("Cost of item: " + cost);
-				waitAndClick(driver, buttons, BaseSuite.WAIT_TEN_SECONDS);
-				// buttons.click();
+				waitAndClick(driver, radioButton, BaseSuite.WAIT_TEN_SECONDS);
 				BaseSuite.getScreenShot(driver, "One-Time-Purchase", methodName);
 			}
 		}
@@ -163,9 +161,12 @@ public class ProductPage extends BaseSuite {
 	 */
 	private String readQuantity(String methodName) {
 		// below code is to take quantity from dropdown
-		System.out.println("Quantity of the product: " + quantity.getText());
 		quantityOfProduct = quantity.getText();
 		result.setProductQuantiy(quantityOfProduct);
+
+		BaseSuite.logInfo("Quantity of the product: " + quantityOfProduct);
+		log.info("Quantity of the product: " + quantityOfProduct);
+
 		getScreenShot(driver, "Quantity", methodName);
 		return quantityOfProduct;
 	}
@@ -179,11 +180,12 @@ public class ProductPage extends BaseSuite {
 	 */
 	private void clickAddToCart(String methodName) {
 		// swipe(driver);
-		for (WebElement btns : btn) {
-			System.out.println("Button name: " + btns.getText());
-			if (btns.getText().contains("Add to Cart")) {
+		for (WebElement button : buttons) {
+			System.out.println("Button name: " + button.getText());
+			if (button.getText().contains("Add to Cart")) {
 				BaseSuite.getScreenShot(driver, "Before clicking Add to Cart", methodName);
-				btns.click();
+				waitAndClick(driver, button, BaseSuite.WAIT_TEN_SECONDS);
+				BaseSuite.getScreenShot(driver, "After Clicking on Add To Cart", methodName);
 				break;
 			}
 
@@ -217,9 +219,9 @@ public class ProductPage extends BaseSuite {
 	 * @author vinothkumar.p08@infosys.com
 	 */
 	private void selectLanguage(String methodName, String language) {
-		waitForElement(driver, radioBtn);
+		waitForElement(driver, radioButton);
 		// Selecting Lanugage based on user input
-		for (WebElement radioButton : radioBtns) {
+		for (WebElement radioButton : radioButtons) {
 			System.out.println("Languages appeared on the screen: " + radioButton.getText());
 			if (radioButton.getText().contains(language)) {
 				BaseSuite.logInfo("Selected Language: " + " <b> " + language + "</b>");
@@ -228,7 +230,7 @@ public class ProductPage extends BaseSuite {
 		}
 		getScreenShot(driver, "Selected Language", methodName);
 
-		for (WebElement saveButton : btn) {
+		for (WebElement saveButton : buttons) {
 			System.out.println("Buttons name: " + saveButton.getText());
 			if (saveButton.getText().contains("Save")) {
 				saveButton.click();

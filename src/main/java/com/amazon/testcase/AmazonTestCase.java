@@ -53,7 +53,7 @@ public class AmazonTestCase extends BaseSuite {
 		// Creating object of AppFlowImpl class
 		AppFlowImpl impl = new AppFlowImpl();
 		// Invoking method to do purchase
-		impl.purchaseItem(methodName, searchProduct, requiredItem, mobileNumber, password, language, pincode);
+		impl.purchaseItemApi(methodName, searchProduct, requiredItem, mobileNumber, password, language, pincode);
 		log.info("Test Case Completed.");
 		BaseSuite.logInfo("Test Case Completed.");
 
